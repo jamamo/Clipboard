@@ -52,7 +52,7 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 15px;
         }
 
         .button-group {
@@ -190,12 +190,18 @@
     <script>
         function copyText(field) {
             var text = $('#' + field).val();
-            $.post('/copy', { field: field, text: text });
+            $.post('/copy', { field: field, text: text }, function(response) {
+                alert(response.message);
+            }).fail(function() {
+                alert('Error copying text to clipboard');
+            });
         }
 
         function pasteText(field) {
             $.post('/paste', { field: field }, function(response) {
                 $('#' + field).val(response.text);
+            }).fail(function() {
+                alert('Error pasting text from clipboard');
             });
         }
 
