@@ -29,7 +29,10 @@ def copy_to_clipboard():
     copied_data[field] = text
 
     # Copy data to the clipboard
-    pyperclip.copy(text)
+    try:
+        pyperclip.copy(text)
+    except Exception as e:
+        return jsonify({'error': f'Failed to copy to clipboard: {str(e)}'}), 500
 
     return jsonify({'message': f'{field} copied to clipboard', 'text': text}), 200
 
@@ -41,8 +44,11 @@ def paste_from_clipboard():
         return jsonify({'error': 'Invalid field'}), 400
 
     # Retrieve the copied text from clipboard
-    clipboard_data = pyperclip.paste()
-    copied_data[field] = clipboard_data
+    try:
+        clipboard_data = pyperclip.paste()
+        copied_data[field] = clipboard_data
+    except Exception as e:
+        return jsonify({'error': f'Failed to paste from clipboard: {str(e)}'}), 500
 
     return jsonify({'message': f'{field} pasted from clipboard', 'text': clipboard_data}), 200
 
@@ -52,11 +58,10 @@ def reset_clipboard():
     for key in copied_data:
         copied_data[key] = ''
 
-    # Clear the system clipboard
+    # Also clear the system clipboard
     pyperclip.copy('')
 
     return jsonify({'message': 'Clipboard reset'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
-
