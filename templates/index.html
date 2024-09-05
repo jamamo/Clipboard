@@ -120,7 +120,7 @@
             <!-- Patient Name -->
             <div class="form-group">
                 <label for="patient_name">Patient Name</label>
-                <input type="text" id="patient_name" name="patient_name" value="{{ copied_data['patient_name'] }}">
+                <input type="text" id="patient_name" name="patient_name" value="">
                 <div class="button-group">
                     <button type="button" onclick="copyText('patient_name')">Copy</button>
                     <button type="button" onclick="pasteText('patient_name')">Paste</button>
@@ -130,7 +130,7 @@
             <!-- NHS Number -->
             <div class="form-group">
                 <label for="nhs_number">NHS Number</label>
-                <input type="text" id="nhs_number" name="nhs_number" value="{{ copied_data['nhs_number'] }}">
+                <input type="text" id="nhs_number" name="nhs_number" value="">
                 <div class="button-group">
                     <button type="button" onclick="copyText('nhs_number')">Copy</button>
                     <button type="button" onclick="pasteText('nhs_number')">Paste</button>
@@ -140,7 +140,7 @@
             <!-- History -->
             <div class="form-group">
                 <label for="history">History</label>
-                <input type="text" id="history" name="history" value="{{ copied_data['history'] }}">
+                <input type="text" id="history" name="history" value="">
                 <div class="button-group">
                     <button type="button" onclick="copyText('history')">Copy</button>
                     <button type="button" onclick="pasteText('history')">Paste</button>
@@ -150,7 +150,7 @@
             <!-- Otoscopy -->
             <div class="form-group">
                 <label for="otoscopy">Otoscopy</label>
-                <input type="text" id="otoscopy" name="otoscopy" value="{{ copied_data['otoscopy'] }}">
+                <input type="text" id="otoscopy" name="otoscopy" value="">
                 <div class="button-group">
                     <button type="button" onclick="copyText('otoscopy')">Copy</button>
                     <button type="button" onclick="pasteText('otoscopy')">Paste</button>
@@ -160,7 +160,7 @@
             <!-- PTA -->
             <div class="form-group">
                 <label for="pta">PTA</label>
-                <input type="text" id="pta" name="pta" value="{{ copied_data['pta'] }}">
+                <input type="text" id="pta" name="pta" value="">
                 <div class="button-group">
                     <button type="button" onclick="copyText('pta')">Copy</button>
                     <button type="button" onclick="pasteText('pta')">Paste</button>
@@ -170,7 +170,7 @@
             <!-- IMP -->
             <div class="form-group">
                 <label for="imp">IMP</label>
-                <input type="text" id="imp" name="imp" value="{{ copied_data['imp'] }}">
+                <input type="text" id="imp" name="imp" value="">
                 <div class="button-group">
                     <button type="button" onclick="copyText('imp')">Copy</button>
                     <button type="button" onclick="pasteText('imp')">Paste</button>
@@ -188,25 +188,27 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        // Use the browser's Clipboard API for copying text
         function copyText(field) {
-            var text = $('#' + field).val();
-            $.post('/copy', { field: field, text: text }, function(response) {
-                alert(response.message);
-            }).fail(function() {
-                alert('Error copying text to clipboard');
+            var text = document.getElementById(field).value;
+            navigator.clipboard.writeText(text).then(function() {
+                alert(field + ' copied to clipboard');
+            }).catch(function(error) {
+                alert('Error copying text to clipboard: ' + error);
             });
         }
 
+        // Use server-side functionality for pasting text
         function pasteText(field) {
             $.post('/paste', { field: field }, function(response) {
-                $('#' + field).val(response.text);
+                document.getElementById(field).value = response.text;
             }).fail(function() {
                 alert('Error pasting text from clipboard');
             });
         }
 
+        // Reset all fields and clear clipboard
         function resetClipboard() {
-            // Reset clipboard by clearing all fields
             $('#clipboardForm input').val('');
             $.post('/reset', {}, function() {
                 alert("Clipboard has been reset");
